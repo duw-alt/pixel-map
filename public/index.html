@@ -22,8 +22,12 @@
         <button id="cancel-btn" class="hidden" disabled>Cancel</button>
         <button id="eraser-btn" class="hidden" aria-pressed="false" aria-label="Toggle eraser" title="Toggle eraser"><img src="/eraser.png" alt="" /></button>
         <input id="color-picker" type="color" aria-label="Pick color" />
+        <input id="secret-code" type="text" placeholder="Secret code" style="display: none;" />
       </div>
-      <div id="guest-display" class="guest-display hidden"></div>
+      <div id="guest-display" class="guest-display hidden">
+        <button id="secret-code-btn" class="secret-btn" title="Enter secret code" aria-label="Secret code">🔐</button>
+        <span id="guest-name"></span>
+      </div>
 
       <div id="name-modal" class="modal">
         <div class="modal-content">

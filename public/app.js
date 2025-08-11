@@ -22,6 +22,9 @@ const cancelBtn = document.getElementById('cancel-btn');
 const eraserBtn = document.getElementById('eraser-btn');
 const hintEl = document.getElementById('hint');
 const guestDisplay = document.getElementById('guest-display');
+const guestName = document.getElementById('guest-name');
+const secretCodeBtn = document.getElementById('secret-code-btn');
+const secretCodeInput = document.getElementById('secret-code');
 
 // Audio for click sounds
 const clickSound = new Audio('/click-sound.mp3');
@@ -30,6 +33,24 @@ const clickSound = new Audio('/click-sound.mp3');
 function playClickSound() {
   clickSound.currentTime = 0; // Reset to start
   clickSound.play().catch(e => console.log('Audio play failed:', e));
+}
+
+// Secret code functionality
+let unlimitedPixels = false;
+
+function checkSecretCode(code) {
+  if (code.toLowerCase() === 'goonlord') {
+    unlimitedPixels = true;
+    session.remaining = Infinity;
+    if (counterEl) {
+      counterEl.textContent = 'Pixels left: ∞';
+    }
+    if (refillEl) {
+      refillEl.classList.add('hidden');
+    }
+    return true;
+  }
+  return false;
 }
 
 // Player session (in-memory only)
@@ -182,7 +203,7 @@ map.on('dragend', () => {
 map.on('click', (e) => {
   if (!session.playerName) return;
   if (map.getZoom() < ZOOM_THRESHOLD) return;
-  if (!isEraserEnabled() && session.remaining <= 0) return;
+  if (!isEraserEnabled() && !unlimitedPixels && session.remaining <= 0) return;
 
   const { lng, lat } = e.lngLat.wrap();
   const { i, j } = snapLngLatToIJ(lng, lat);
@@ -192,8 +213,10 @@ map.on('click', (e) => {
   if (isEraserEnabled()) {
     if (queuedPixels.has(key)) {
       queuedPixels.delete(key);
-      session.remaining = Math.max(0, session.remaining + 1);
-      savePixelCount();
+      if (!unlimitedPixels) {
+        session.remaining = Math.max(0, session.remaining + 1);
+        savePixelCount();
+      }
       ensureRefillTimer();
       updateHud();
       render();
@@ -207,8 +230,10 @@ map.on('click', (e) => {
 
   const pixel = { i, j, color: session.color, playerName: session.playerName };
   queuedPixels.set(key, pixel);
-  session.remaining = Math.max(0, session.remaining - 1);
-  savePixelCount();
+  if (!unlimitedPixels) {
+    session.remaining = Math.max(0, session.remaining - 1);
+    savePixelCount();
+  }
   ensureRefillTimer();
   updateHud();
   render();
@@ -216,7 +241,11 @@ map.on('click', (e) => {
 });
 
 function updateHud() {
-  counterEl.textContent = `Pixels left: ${session.remaining}`;
+  if (unlimitedPixels) {
+    counterEl.textContent = 'Pixels left: ∞';
+  } else {
+    counterEl.textContent = `Pixels left: ${session.remaining}`;
+  }
   const inCanvasMode = map.getZoom() >= ZOOM_THRESHOLD;
   paintBtn.classList.toggle('hidden', !inCanvasMode);
   paintBtn.disabled = queuedPixels.size === 0;
@@ -240,9 +269,9 @@ function updateHud() {
 }
 
 function updateGuestDisplay() {
-  if (!guestDisplay) return;
+  if (!guestDisplay || !guestName) return;
   if (session.playerName) {
-    guestDisplay.textContent = `painting as #${session.playerName}`;
+    guestName.textContent = `painting as #${session.playerName}`;
     guestDisplay.classList.remove('hidden');
   } else {
     guestDisplay.classList.add('hidden');
@@ -516,7 +545,6 @@ paintBtn.addEventListener('click', () => {
   queuedPixels.clear();
   updateHud();
   render();
-  playClickSound();
 });
 
 // Cancel button returns queued pixels and clears preview
@@ -530,7 +558,6 @@ if (cancelBtn) {
     ensureRefillTimer();
     updateHud();
     render();
-    playClickSound();
   });
 }
 
@@ -549,7 +576,6 @@ if (eraserBtn) {
   eraserBtn.addEventListener('click', () => {
     const pressed = eraserBtn.getAttribute('aria-pressed') === 'true';
     eraserBtn.setAttribute('aria-pressed', String(!pressed));
-    playClickSound();
   });
 }
 
@@ -598,7 +624,7 @@ if (colorPicker) {
 
 // Refill logic
 function ensureRefillTimer() {
-  if (session.remaining >= MAX_PIXELS) {
+  if (unlimitedPixels || session.remaining >= MAX_PIXELS) {
     stopRefillTimer();
     return;
   }
@@ -620,7 +646,7 @@ function stopRefillTimer() {
 }
 
 function onRefillTick() {
-  if (session.remaining >= MAX_PIXELS) {
+  if (unlimitedPixels || session.remaining >= MAX_PIXELS) {
     stopRefillTimer();
     return;
   }
@@ -642,7 +668,7 @@ function onRefillTick() {
 
 function updateRefillHud() {
   if (!refillEl) return;
-  if (session.remaining >= MAX_PIXELS || !session.playerName) {
+  if (unlimitedPixels || session.remaining >= MAX_PIXELS || !session.playerName) {
     refillEl.classList.add('hidden');
     return;
   }
@@ -681,5 +707,29 @@ if (storedName) {
   ensureRefillTimer();
   updateHud();
   updateGuestDisplay && updateGuestDisplay();
+}
+
+// Secret code button event listener
+if (secretCodeBtn) {
+  secretCodeBtn.addEventListener('click', () => {
+    const code = prompt('Enter secret code:');
+    if (code && checkSecretCode(code.trim())) {
+      // No sound for secret code activation
+    }
+  });
+}
+
+// Secret code input event listener (fallback)
+if (secretCodeInput) {
+  secretCodeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const code = secretCodeInput.value.trim();
+      if (checkSecretCode(code)) {
+        secretCodeInput.value = '';
+        secretCodeInput.style.display = 'none';
+        playClickSound();
+      }
+    }
+  });
 }
 
