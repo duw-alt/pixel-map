@@ -16,7 +16,6 @@ const nameForm = document.getElementById('name-form');
 const nameInput = document.getElementById('player-name');
 const counterEl = document.getElementById('counter');
 const paintBtn = document.getElementById('paint-btn');
-const colorSwatch = document.getElementById('color-swatch');
 const colorPicker = document.getElementById('color-picker');
 const refillEl = document.getElementById('refill');
 const cancelBtn = document.getElementById('cancel-btn');
@@ -30,6 +29,21 @@ const session = {
   color: null,
   remaining: MAX_PIXELS,
 };
+
+// Utility to persist pixel count
+function savePixelCount() {
+  if (session.playerName) {
+    localStorage.setItem('pixelCount', String(session.remaining));
+  }
+}
+
+// Utility to restore pixel count
+function restorePixelCount() {
+  const stored = localStorage.getItem('pixelCount');
+  if (stored !== null && !isNaN(Number(stored))) {
+    session.remaining = Math.max(0, Math.min(MAX_PIXELS, Number(stored)));
+  }
+}
 
 // Refill state
 let nextRefillAtMs = null;
@@ -157,7 +171,8 @@ map.on('click', (e) => {
   if (isEraserEnabled()) {
     if (queuedPixels.has(key)) {
       queuedPixels.delete(key);
-      session.remaining = Math.min(MAX_PIXELS, session.remaining + 1);
+      session.remaining = Math.max(0, session.remaining + 1);
+      savePixelCount();
       ensureRefillTimer();
       updateHud();
       render();
@@ -171,6 +186,7 @@ map.on('click', (e) => {
   const pixel = { i, j, color: session.color, playerName: session.playerName };
   queuedPixels.set(key, pixel);
   session.remaining = Math.max(0, session.remaining - 1);
+  savePixelCount();
   ensureRefillTimer();
   updateHud();
   render();
@@ -182,8 +198,10 @@ function updateHud() {
   paintBtn.classList.toggle('hidden', !inCanvasMode);
   paintBtn.disabled = queuedPixels.size === 0;
   if (cancelBtn) {
-    cancelBtn.classList.toggle('hidden', !inCanvasMode);
-    cancelBtn.disabled = queuedPixels.size === 0;
+    // Only visible when user is actively painting (has at least one queued)
+    const showCancel = inCanvasMode && queuedPixels.size > 0;
+    cancelBtn.classList.toggle('hidden', !showCancel);
+    cancelBtn.disabled = !showCancel;
   }
   if (eraserBtn) {
     // Only visible when user is actively painting (has at least one queued)
@@ -484,6 +502,7 @@ if (cancelBtn) {
     const giveBack = queuedPixels.size;
     queuedPixels.clear();
     session.remaining = Math.min(MAX_PIXELS, session.remaining + giveBack);
+    savePixelCount();
     ensureRefillTimer();
     updateHud();
     render();
@@ -521,7 +540,6 @@ nameForm.addEventListener('submit', (e) => {
   if (colorPicker) {
     try { colorPicker.value = session.color; } catch {}
   }
-  colorSwatch.style.background = session.color;
   nameModal.classList.add('hidden');
   ensureRefillTimer();
   updateHud();
@@ -548,7 +566,6 @@ if (colorPicker) {
   colorPicker.addEventListener('input', () => {
     if (!session.playerName) return; // require name first
     session.color = colorPicker.value;
-    colorSwatch.style.background = session.color;
     render();
   });
 }
@@ -586,6 +603,7 @@ function onRefillTick() {
     const elapsed = now - nextRefillAtMs;
     const steps = 1 + Math.floor(elapsed / REFILL_INTERVAL_MS);
     session.remaining = Math.min(MAX_PIXELS, session.remaining + steps);
+    savePixelCount();
     nextRefillAtMs += steps * REFILL_INTERVAL_MS;
     if (session.remaining >= MAX_PIXELS) {
       stopRefillTimer();
@@ -632,8 +650,8 @@ if (storedName) {
   if (colorPicker) {
     try { colorPicker.value = session.color; } catch {}
   }
-  colorSwatch.style.background = session.color;
   nameModal.classList.add('hidden');
+  restorePixelCount();
   ensureRefillTimer();
   updateHud();
   updateGuestDisplay && updateGuestDisplay();

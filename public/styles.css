@@ -35,7 +35,7 @@ canvas.overlay {
 
 #hud {
   position: absolute;
-  top: 12px;
+  bottom: 12px;
   left: 12px;
   display: flex;
   align-items: center;
@@ -82,17 +82,33 @@ canvas.overlay {
 }
 
 #eraser-btn {
-  background: #8d5555c7;
+  background: #ffffff;
   color: #fff;
   border: none;
   padding: 8px 12px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#eraser-btn.hidden { 
+  display: none !important; 
+}
+
+#eraser-btn img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none;
 }
 
 #eraser-btn[aria-pressed="true"] {
-  background: #c0392b;
+  background: #9f9f9f;
+  opacity: 0.6;
+  filter: grayscale(80%);
 }
 
 .hidden { display: none; }
@@ -113,9 +129,27 @@ canvas.overlay {
   width: 34px;
   height: 34px;
   padding: 0;
-  border: none;
+  border: 2.5px solid rgba(255,255,255,0.85);
+  border-radius: 8px;
   background: transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+}
+#color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 8px;
+}
+#color-picker::-webkit-color-swatch {
+  border-radius: 6px;
+  border: none;
+}
+#color-picker::-moz-focus-inner { border: 0; padding: 0; }
+#color-picker::-moz-color-swatch {
+  border: none;
+  border-radius: 6px;
 }
 
 #attribution {
@@ -132,7 +166,7 @@ canvas.overlay {
 
 #hint {
   position: absolute;
-  top: 12px;
+  top: 50px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(28, 56, 33, 0.9);
@@ -144,6 +178,7 @@ canvas.overlay {
   box-shadow: 0 6px 18px rgba(0,0,0,0.35);
   opacity: 1;
   transition: opacity 500ms ease-in-out;
+  text-align: center;
 }
 
 #hint.fade-out {
@@ -211,5 +246,67 @@ canvas.overlay {
   box-shadow: 0 6px 18px rgba(0,0,0,0.35);
   backdrop-filter: blur(6px);
   z-index: 10;
+}
+
+@media (max-width: 450px) {
+  #hud {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    top: auto;
+    transform: none;
+    padding: 6px 8px;
+    border-radius: 10px;
+    gap: 6px;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    justify-content: center;
+    width: auto;
+    max-width: unset;
+  }
+  .guest-display {
+    top: 6px;
+    right: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  #paint-btn, #cancel-btn, #eraser-btn {
+    padding: 10px 10px;
+    font-size: 1rem;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 8px;
+  }
+  #color-swatch {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  #color-picker {
+    width: 36px;
+    height: 36px;
+  }
+  .modal-content {
+    width: 90vw;
+    min-width: unset;
+    max-width: 98vw;
+    padding: 18px 8px;
+    font-size: 1.1rem;
+  }
+  .modal-content input {
+    font-size: 1.1rem;
+    padding: 10px 8px;
+  }
+  .modal-content button {
+    font-size: 1.1rem;
+    padding: 10px 8px;
+  }
+  #eraser-btn img {
+    width: 22px;
+    height: 22px;
+  }
 }
 
