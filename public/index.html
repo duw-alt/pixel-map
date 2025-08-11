@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multiplayer Pixel Map (Lite)</title>
+    <link
+      href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="map"></div>
+      <div id="hint" class="hidden">Zoom in to start painting</div>
+
+      <div id="hud">
+        <div id="counter">Pixels left: 60</div>
+        <div id="refill" class="hidden">Next +1 in 00:30</div>
+        <button id="paint-btn" class="hidden" disabled>Paint Now</button>
+        <button id="cancel-btn" class="hidden" disabled>Cancel</button>
+        <button id="eraser-btn" class="hidden" aria-pressed="false" title="Toggle eraser">Eraser</button>
+        <div id="color-swatch" title="Your color"></div>
+        <input id="color-picker" type="color" aria-label="Pick color" />
+      </div>
+      <div id="guest-display" class="guest-display hidden"></div>
+
+      <div id="name-modal" class="modal">
+        <div class="modal-content">
+          <h2>Enter your name</h2>
+          <form id="name-form">
+            <input id="player-name" type="text" placeholder="Your name" maxlength="24" required />
+            <button type="submit">Start</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+    <script src="/app.js"></script>
+  </body>
+  </html>
+

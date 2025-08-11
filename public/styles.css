@@ -1,0 +1,215 @@
+:root {
+  --bg: #0f1115;
+  --fg: #e8e8e8;
+  --accent: #4f8cff;
+  --muted: #a0a6b1;
+  --panel: rgba(20, 22, 28, 0.9);
+}
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  cursor: pointer; /* default pointer for clarity */
+}
+
+/* Ensure MapLibre canvas follows our cursor policy */
+.maplibregl-canvas { cursor: pointer !important; }
+.maplibregl-canvas.is-dragging { cursor: grabbing !important; }
+
+canvas.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+#hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  padding: 8px 10px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+}
+
+#counter {
+  font-weight: 600;
+}
+
+#paint-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#paint-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#cancel-btn {
+  background: #2a2f3a;
+  color: #e8e8e8;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#eraser-btn {
+  background: #8d5555c7;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#eraser-btn[aria-pressed="true"] {
+  background: #c0392b;
+}
+
+.hidden { display: none; }
+
+#refill {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#color-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 2px solid rgba(255,255,255,0.8);
+}
+
+#color-picker {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+#attribution {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: var(--panel);
+  color: var(--muted);
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+
+#hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(28, 56, 33, 0.9);
+  color: #a5e6a7;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  opacity: 1;
+  transition: opacity 500ms ease-in-out;
+}
+
+#hint.fade-out {
+  opacity: 0;
+}
+
+.modal {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.45);
+}
+
+.modal.hidden { display: none; }
+
+.modal-content {
+  background: var(--panel);
+  padding: 20px;
+  border-radius: 12px;
+  min-width: 280px;
+  display: grid;
+  gap: 10px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+}
+
+.modal-content h2 {
+  margin: 0 0 6px 0;
+}
+
+.modal-content form {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-content input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #2a2f3a;
+  background: #0c0e12;
+  color: var(--fg);
+}
+
+.modal-content button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.guest-display {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--panel);
+  color: var(--fg);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+}
+
