@@ -4,8 +4,8 @@
 const ZOOM_THRESHOLD = 15;
 // Full cell rendering for clean edges
 const PIXEL_SCALE = 1.0;
-const MAX_PIXELS = 60;
-const REFILL_INTERVAL_MS = 30000; // 30s per pixel
+const MAX_PIXELS = 100;
+const REFILL_INTERVAL_MS = 20000; // 20s per pixel
 const SNAP_EPS = 1e-9; // mitigate FP boundary issues
 // Mercator square grid size (meters). Server will send authoritative value.
 let GRID_METERS = 25;
