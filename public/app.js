@@ -23,6 +23,15 @@ const eraserBtn = document.getElementById('eraser-btn');
 const hintEl = document.getElementById('hint');
 const guestDisplay = document.getElementById('guest-display');
 
+// Audio for click sounds
+const clickSound = new Audio('/click-sound.mp3');
+
+// Function to play click sound
+function playClickSound() {
+  clickSound.currentTime = 0; // Reset to start
+  clickSound.play().catch(e => console.log('Audio play failed:', e));
+}
+
 // Player session (in-memory only)
 const session = {
   playerName: null,
@@ -188,6 +197,7 @@ map.on('click', (e) => {
       ensureRefillTimer();
       updateHud();
       render();
+      playClickSound();
     }
     return;
   }
@@ -202,6 +212,7 @@ map.on('click', (e) => {
   ensureRefillTimer();
   updateHud();
   render();
+  playClickSound();
 });
 
 function updateHud() {
@@ -505,6 +516,7 @@ paintBtn.addEventListener('click', () => {
   queuedPixels.clear();
   updateHud();
   render();
+  playClickSound();
 });
 
 // Cancel button returns queued pixels and clears preview
@@ -518,6 +530,7 @@ if (cancelBtn) {
     ensureRefillTimer();
     updateHud();
     render();
+    playClickSound();
   });
 }
 
@@ -536,6 +549,7 @@ if (eraserBtn) {
   eraserBtn.addEventListener('click', () => {
     const pressed = eraserBtn.getAttribute('aria-pressed') === 'true';
     eraserBtn.setAttribute('aria-pressed', String(!pressed));
+    playClickSound();
   });
 }
 
