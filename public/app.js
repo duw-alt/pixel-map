@@ -61,7 +61,19 @@ const map = new maplibregl.Map({
   style: 'https://tiles.openfreemap.org/styles/liberty',
   center: [0, 0],
   zoom: 2,
+  bearing: 0,
+  pitch: 0,
 });
+
+// Ensure flat view and disable rotation/tilt gestures
+map.setBearing(0);
+map.setPitch(0);
+if (map.dragRotate && typeof map.dragRotate.disable === 'function') {
+  map.dragRotate.disable();
+}
+if (map.touchZoomRotate && typeof map.touchZoomRotate.disableRotation === 'function') {
+  map.touchZoomRotate.disableRotation();
+}
 
 // Canvas overlay on top of MapLibre canvas
 const overlayCanvas = document.createElement('canvas');
